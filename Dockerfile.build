@@ -1,0 +1,14 @@
+FROM alpine:3.2
+RUN apk update && \
+    apk add go=1.4.2-r0 git=2.4.1-r0 bash=4.3.33-r0 build-base=0.4-r0
+COPY . /mnt/
+#COPY consul /gopath/src/github.com/hashicorp/consul
+RUN export GOPATH=/gopath && \
+    mkdir -p $GOPATH/src/github.com/hashicorp/ && \
+    cd $GOPATH/src/github.com/hashicorp && \
+    cp -r /mnt/consul/ . && \
+    cd consul && \
+    rm .git && \
+    cp -r /mnt/.git/modules/consul .git && \
+    sed -i '/worktree/d' .git/config && \
+    make
